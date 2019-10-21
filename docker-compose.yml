@@ -1,0 +1,35 @@
+﻿version: '3'
+services:
+    sqlserver:
+      image: microsoft/mssql-server-linux:latest
+      container_name: sqlserver
+      volumes:
+       - /e/Data/mssql:/var/opt/mssql
+       #- sqlserverdata:/var/opt/mssql 
+      ports:
+        - "1434:1433"
+      environment:
+        - ACCEPT_EULA=Y 
+        - MSSQL_PID=Developer
+        - SA_PASSWORD=8jkGh47hnDw89Haq8LN2   
+    catelogService:
+      image: mycatelog
+      depends_on:
+        - sqlserver
+        - rabbitMQ
+      ports:
+        - "7071:80"
+      environment:
+        - ASPNETCORE_ENVIRONMENT=Production
+    productService:
+      image: bestbuyproduct
+      depends_on:
+        - sqlserver
+        - rabbitMQ
+      ports:
+        - "7070:80"
+      environment:
+        - ASPNETCORE_ENVIRONMENT=Production
+    rabbitMQ:
+      image: rabbitmq:3-management
+
